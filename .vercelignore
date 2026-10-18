@@ -1,0 +1,5 @@
+.claude
+dev-server.py
+assets/img/_originals
+.env*
+.vercel
