@@ -12,7 +12,7 @@
 <link rel="icon" href="assets/logo-clean.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="assets/img/bober.jpg">
 <link rel="stylesheet" href="style.css">
 <script type="application/ld+json">
@@ -53,8 +53,17 @@
 <main id="top">
 
   <!-- ============ HERO: everything important on the first screen ============ -->
+  <div class="hero-pin" id="hero-pin">
   <section class="hero">
     <div class="hero__bg"><img src="assets/img/bober.jpg" alt="Інтер'єр Bober Barbershop" fetchpriority="high"></div>
+    <canvas class="hair" id="hair" aria-hidden="true"></canvas>
+    <div class="hud" id="hud" aria-hidden="true">
+      <div class="hud__row"><span>Насадка</span><b data-hud="guard">12.0 мм</b></div>
+      <div class="hud__row"><span>Фейд</span><b data-hud="fade">0%</b></div>
+      <div class="hud__bar"><i data-hud="bar"></i></div>
+      <div class="hud__geo">Ужгород · 48.62°N 22.29°E</div>
+    </div>
+    <p class="sweep-hint" id="sweep-hint" aria-hidden="true">Гортай, щоб змести волосся <span>↓</span></p>
 
     <div class="game-hint" id="game-hint" aria-live="polite">
       <span class="game-hint__title">Бобер стрибне 3 рази —<br>отримаєш промокод <b>−10%</b></span>
@@ -100,6 +109,7 @@
       </li>
     </ul>
   </section>
+  </div>
 
   <!-- ============ MARQUEE ============ -->
   <div class="marquee" aria-hidden="true">
@@ -132,9 +142,39 @@
     </div>
   </section>
 
+  <!-- ============ VISIT PATH ============ -->
+  <div class="visit-pin" id="visit-pin">
+  <section id="visit" class="section visit" aria-labelledby="visit-title">
+    <div class="visit__inner">
+      <div class="sec-head"><span>02</span><span>Як проходить візит</span></div>
+      <div class="visit__top">
+        <h2 id="visit-title">Твій шлях <em>до крісла</em></h2>
+        <p class="visit__counter">Хвилин у кріслі <b id="visit-min">0</b></p>
+      </div>
+      <svg class="visit__map" viewBox="0 0 1200 300" role="img" aria-label="Чотири етапи візиту: вітання, консультація, стрижка, укладка">
+        <path class="visit__ghost" d="M60 210 C 220 210, 240 90, 380 90 S 560 230, 700 210 S 880 70, 1020 90 S 1120 170, 1140 170"/>
+        <path class="visit__line" id="visit-line" pathLength="1" d="M60 210 C 220 210, 240 90, 380 90 S 560 230, 700 210 S 880 70, 1020 90 S 1120 170, 1140 170"/>
+        <g class="visit__stops">
+          <g data-stop="0"><circle cx="60" cy="210" r="9"/><text x="60" y="250">00:00</text></g>
+          <g data-stop="1"><circle cx="380" cy="90" r="9"/><text x="380" y="60">00:05</text></g>
+          <g data-stop="2"><circle cx="700" cy="210" r="9"/><text x="700" y="250">00:10</text></g>
+          <g data-stop="3"><circle cx="1020" cy="90" r="9"/><text x="1020" y="60">00:40</text></g>
+        </g>
+        <g class="visit__dot" id="visit-dot"><circle r="18" class="visit__halo"/><circle r="7"/></g>
+      </svg>
+      <ol class="visit__cards">
+        <li data-card="0"><span>00:00</span><h3>Вітання</h3><p>Проходиш, сідаєш, відпочиваєш з дороги.</p></li>
+        <li data-card="1"><span>00:05</span><h3>Консультація</h3><p>Обговорюємо форму, довжину й твій стиль.</p></li>
+        <li data-card="2"><span>00:10</span><h3>Стрижка</h3><p>Машинка, ножиці й чисті лінії без поспіху.</p></li>
+        <li data-card="3"><span>00:40</span><h3>Укладка</h3><p>Фінальні штрихи — і ти готовий до виходу.</p></li>
+      </ol>
+    </div>
+  </section>
+  </div>
+
   <!-- ============ WORKS ============ -->
   <section id="works" class="section">
-    <div class="sec-head"><span>02</span><span>Наші роботи</span></div>
+    <div class="sec-head"><span>03</span><span>Наші роботи</span></div>
     <div class="row-head reveal">
       <h2>Свіжо <em>з крісла</em></h2>
       <a href="https://www.instagram.com/bober.barbershop" target="_blank" rel="noopener" class="ulink">Більше в Instagram ↗</a>
@@ -153,7 +193,7 @@
 
   <!-- ============ BARBERS ============ -->
   <section id="barbers" class="section">
-    <div class="sec-head"><span>03</span><span>Майстри</span></div>
+    <div class="sec-head"><span>04</span><span>Майстри</span></div>
     <h2 class="reveal">Обери <em>свого барбера</em></h2>
     <div class="barbers">
       <article class="barber reveal">
@@ -180,7 +220,7 @@
 
   <!-- ============ REVIEWS ============ -->
   <section id="reviews" class="section">
-    <div class="sec-head"><span>04</span><span>Відгуки</span></div>
+    <div class="sec-head"><span>05</span><span>Відгуки</span></div>
     <h2 class="reveal">Кажуть <em>клієнти</em></h2>
     <div class="reviews">
       <blockquote class="review reveal"><div class="stars" aria-label="5 з 5">★★★★★</div><p>Все чітко. Спокійна атмосфера, хороший сервіс і результат саме такий, як хотів.</p><cite>Олександр</cite></blockquote>

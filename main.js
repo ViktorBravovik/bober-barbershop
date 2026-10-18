@@ -546,3 +546,224 @@ if (!reduceMotion) {
   try { localStorage.removeItem("bober-caught"); } catch {}
   reset();
 })();
+
+/* =========================================================
+   v2 — SELENE-inspired updates
+   1) hair on the first screen is swept away as you scroll (and by the cursor)
+   2) clipper HUD: guard 12 → 0 mm, fade 0 → 100%
+   3) visit path: line draws through 4 stops, minutes count up
+   ========================================================= */
+(() => {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const clamp01 = (v) => Math.max(0, Math.min(1, v));
+  const ease = (t) => t * t * (3 - 2 * t);
+
+  /* ---------- 1 + 2: hair sweep and HUD ---------- */
+  const heroPin = document.getElementById("hero-pin");
+  const hero = heroPin && heroPin.querySelector(".hero");
+  const canvas = document.getElementById("hair");
+  const hint = document.getElementById("sweep-hint");
+  const hud = document.getElementById("hud");
+  const info = document.querySelector(".hero__info");
+
+  const setInfoH = () => info && hero && hero.style.setProperty("--info-h", `${info.offsetHeight}px`);
+  // pin the first screen only when its content fits in one window height
+  const checkFit = () => {
+    if (!heroPin || !hero) return;
+    heroPin.classList.remove("no-pin");
+    if (getComputedStyle(hero).position !== "sticky") return;
+    // fits = the beaver starts below the header and the info row ends inside the screen
+    // (scrollHeight can't be used: the slightly zoomed background photo inflates it)
+    // layout positions (offsetTop) ignore the entrance animations' temporary shifts
+    const headerH = document.getElementById("header").offsetHeight;
+    const content = hero.querySelector(".hero__content");
+    const top = content.offsetTop + hero.querySelector(".hero__game").offsetTop;
+    const bottom = info.offsetTop + info.offsetHeight;
+    if (top < headerH - 1 || bottom > hero.clientHeight + 1) heroPin.classList.add("no-pin");
+  };
+  const layout = () => { checkFit(); setInfoH(); };
+  layout();
+  window.addEventListener("resize", layout);
+  document.fonts && document.fonts.ready.then(layout);
+
+  // 0 → 1 while the first screen is held (desktop) or over the first ~60% of a screen (phones)
+  const heroProgress = () => {
+    if (!heroPin) return 1;
+    const extra = heroPin.offsetHeight - window.innerHeight;
+    const pinned = !heroPin.classList.contains("no-pin") && getComputedStyle(hero).position === "sticky";
+    if (pinned && extra > 50) return clamp01(-heroPin.getBoundingClientRect().top / extra);
+    return clamp01(window.scrollY / (window.innerHeight * 0.6));
+  };
+
+  const hudGuard = hud && hud.querySelector('[data-hud="guard"]');
+  const hudFade = hud && hud.querySelector('[data-hud="fade"]');
+  const hudBar = hud && hud.querySelector('[data-hud="bar"]');
+  const updateHud = (p) => {
+    if (!hud) return;
+    hudGuard.textContent = `${(12 * (1 - p)).toFixed(1)} мм`;
+    hudFade.textContent = `${Math.round(p * 100)}%`;
+    hudBar.style.transform = `scaleX(${p.toFixed(3)})`;
+    if (hint) hint.style.opacity = String(Math.max(0, 1 - p * 3));
+  };
+
+  if (canvas && hero && !reduce) {
+    const ctx = canvas.getContext("2d");
+    const small = window.innerWidth < 900;
+    const COUNT = small ? 320 : 700;
+    let seed = 7;
+    const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const colours = [
+      [239, 233, 223], [239, 233, 223], [214, 200, 182], // light strands read on the dark photo
+      [150, 108, 78], [112, 80, 58],                        // a few warm brown ones
+    ];
+    const hairs = Array.from({ length: COUNT }, () => {
+      const c = colours[(rnd() * colours.length) | 0];
+      return {
+        x: rnd(), y: 0.08 + rnd() * 0.84,                  // normalised position on the hero
+        len: 7 + rnd() * 20, bend: (rnd() - 0.5) * 10,
+        ang: rnd() * Math.PI, w: 0.7 + rnd() * 1.1,
+        col: `rgba(${c[0]},${c[1]},${c[2]},${(0.35 + rnd() * 0.5).toFixed(2)})`,
+        vx: 0.5 + rnd() * 1.1, vy: -0.9 + rnd() * 0.9,      // blown up and to the right, like a dryer
+        spin: (rnd() - 0.5) * 6, delay: rnd() * 0.35,
+        ox: 0, oy: 0,                                       // cursor push (stays blown)
+      };
+    });
+
+    let W = 0, H = 0, dpr = 1;
+    const size = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = hero.clientWidth; H = hero.clientHeight;
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      dirty = true;
+    };
+    let dirty = true, lastP = -1;
+    const mouse = { x: -9999, y: -9999, active: false };
+
+    const draw = (p) => {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      if (p >= 0.999) return;
+      ctx.lineCap = "round";
+      for (const h of hairs) {
+        const t = ease(clamp01((p - h.delay * 0.5) / (1 - h.delay * 0.5)));
+        const a = 1 - clamp01((t - 0.35) / 0.65);
+        if (a <= 0.01) continue;
+        const x = h.x * W + h.ox + h.vx * t * W * 0.9;
+        const y = h.y * H + h.oy + h.vy * t * H * 0.9;
+        const ang = h.ang + h.spin * t;
+        const dx = Math.cos(ang) * h.len / 2, dy = Math.sin(ang) * h.len / 2;
+        ctx.globalAlpha = a;
+        ctx.strokeStyle = h.col;
+        ctx.lineWidth = h.w;
+        ctx.beginPath();
+        ctx.moveTo(x - dx, y - dy);
+        ctx.quadraticCurveTo(x - dy * h.bend * 0.08, y + dx * h.bend * 0.08, x + dx, y + dy);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    };
+
+    // the logo-cursor works like a blow-dryer: hair near it gets pushed away
+    if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      hero.addEventListener("mousemove", (e) => {
+        const r = hero.getBoundingClientRect();
+        mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.active = true;
+      });
+      hero.addEventListener("mouseleave", () => (mouse.active = false));
+    }
+    const blow = (p) => {
+      if (!mouse.active || p >= 0.999) return;
+      const R = 110;
+      for (const h of hairs) {
+        const x = h.x * W + h.ox, y = h.y * H + h.oy;
+        const dx = x - mouse.x, dy = y - mouse.y, d = Math.hypot(dx, dy);
+        if (d < R && d > 0.1) {
+          const f = (R - d) / R * 6;
+          h.ox += (dx / d) * f; h.oy += (dy / d) * f;
+          dirty = true;
+        }
+      }
+    };
+
+    let visible = true;
+    new IntersectionObserver(([e]) => (visible = e.isIntersecting)).observe(hero);
+    const frame = () => {
+      const p = heroProgress();
+      blow(p);
+      if (dirty || Math.abs(p - lastP) > 0.0005) {
+        draw(p); updateHud(p);
+        lastP = p; dirty = false;
+      }
+    };
+    const loop = () => { if (visible) frame(); requestAnimationFrame(loop); };
+    size();
+    frame(); // first paint right away
+    window.addEventListener("resize", () => { size(); frame(); });
+    window.addEventListener("scroll", frame, { passive: true }); // also update on scroll itself
+    requestAnimationFrame(loop);
+  } else {
+    // no animation: no hair, HUD shows the finished fade
+    if (canvas) canvas.remove();
+    updateHud(1);
+  }
+
+  /* ---------- 3: visit path ---------- */
+  const visitPin = document.getElementById("visit-pin");
+  const line = document.getElementById("visit-line");
+  const dot = document.getElementById("visit-dot");
+  const minEl = document.getElementById("visit-min");
+  if (!visitPin || !line || !dot) return;
+  const stops = [...visitPin.querySelectorAll(".visit__stops g")];
+  const cards = [...visitPin.querySelectorAll(".visit__cards li")];
+  const total = line.getTotalLength();
+
+  // where each stop sits along the line (0..1)
+  const samples = Array.from({ length: 401 }, (_, i) => {
+    const pt = line.getPointAtLength((i / 400) * total);
+    return { f: i / 400, x: pt.x, y: pt.y };
+  });
+  const fracs = stops.map((g) => {
+    const c = g.querySelector("circle");
+    const cx = +c.getAttribute("cx"), cy = +c.getAttribute("cy");
+    return samples.reduce((best, s) => (Math.hypot(s.x - cx, s.y - cy) < Math.hypot(best.x - cx, best.y - cy) ? s : best)).f;
+  });
+  const minutesAt = [0, 5, 10, 40]; // matches the 00:00 / 00:05 / 00:10 / 00:40 labels
+  const FINAL_MIN = 45;
+  const minutes = (q) => {
+    const fs = [...fracs, 1], ms = [...minutesAt, FINAL_MIN];
+    for (let i = 0; i < fs.length - 1; i++) {
+      if (q <= fs[i + 1]) return ms[i] + (ms[i + 1] - ms[i]) * clamp01((q - fs[i]) / Math.max(1e-6, fs[i + 1] - fs[i]));
+    }
+    return FINAL_MIN;
+  };
+
+  const visitProgress = () => {
+    const extra = visitPin.offsetHeight - window.innerHeight;
+    if (extra > 50) return clamp01((-visitPin.getBoundingClientRect().top) / (extra * 0.85));
+    const r = line.ownerSVGElement.getBoundingClientRect();
+    return clamp01((window.innerHeight * 0.8 - r.top) / (window.innerHeight * 0.7));
+  };
+
+  let lastQ = -1;
+  const render = (q) => {
+    line.style.strokeDashoffset = String(1 - q);
+    const pt = line.getPointAtLength(q * total);
+    dot.setAttribute("transform", `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)})`);
+    fracs.forEach((f, i) => {
+      const on = q >= f - 0.004;
+      stops[i].classList.toggle("is-on", on);
+      cards[i] && cards[i].classList.toggle("is-on", on);
+    });
+    if (minEl) minEl.textContent = String(Math.round(minutes(q)));
+  };
+  if (reduce) { render(1); return; }
+  const update = () => {
+    const q = visitProgress();
+    if (Math.abs(q - lastQ) > 0.0005) { render(q); lastQ = q; }
+  };
+  const tick = () => { update(); requestAnimationFrame(tick); };
+  render(0);
+  update();
+  window.addEventListener("scroll", update, { passive: true });
+  requestAnimationFrame(tick);
+})();
