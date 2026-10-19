@@ -32,6 +32,12 @@
 <body>
 
 <!-- ============ HEADER ============ -->
+<a class="promo-bar" href="https://n777682.alteg.io" target="_blank" rel="noopener">
+  <span class="promo-bar__tag">Акція</span>
+  <span class="promo-bar__full">Приведи друга — отримай безкоштовну стрижку від нашого професійно навченого стажера</span>
+  <span class="promo-bar__short">Приведи друга — стрижка безкоштовно</span>
+  <i>→</i>
+</a>
 <header id="header">
   <a href="#top" class="header__logo" aria-label="Bober Barbershop — на початок">
     <img class="swing" src="assets/logo-clean.png" alt="">
@@ -66,14 +72,14 @@
     <p class="sweep-hint" id="sweep-hint" aria-hidden="true">Гортай, щоб змести волосся <span>↓</span></p>
 
     <div class="game-hint" id="game-hint" aria-live="polite">
-      <span class="game-hint__title">Бобер стрибне 3 рази —<br>отримаєш промокод <b>−10%</b></span>
+      <span class="game-hint__title">Займаєшся спортом? Бобер стрибне 3 рази —<br>отримаєш <b>−15%</b> на стрижку</span>
       <span class="game-dots" aria-hidden="true"><i></i><i></i><i></i></span>
       <span class="game-hint__msg" data-msg>Наведи курсор на бобра</span>
     </div>
 
     <div class="hero__content">
       <div class="hero__game">
-        <button type="button" class="hero__logo-wrap" id="bober" aria-label="Клікни на бобра — 3 стрибки дають промокод на знижку 10%">
+        <button type="button" class="hero__logo-wrap" id="bober" aria-label="Клікни на бобра — 3 стрибки дають промокод −15% для спортсменів">
           <img class="hero__logo" src="assets/logo-clean.png" alt="Логотип Bober Barbershop" draggable="false">
         </button>
       </div>
@@ -114,8 +120,8 @@
   <!-- ============ MARQUEE ============ -->
   <div class="marquee" aria-hidden="true">
     <div class="marquee__track">
-      <span>Bober Barbershop</span><b>✦</b><span><em>Ужгород</em></span><b>✦</b><span>Стрижки</span><b>✦</b><span><em>Борода</em></span><b>✦</b><span>Запис онлайн</span><b>✦</b><span><em>Estd 2024</em></span><b>✦</b>
-      <span>Bober Barbershop</span><b>✦</b><span><em>Ужгород</em></span><b>✦</b><span>Стрижки</span><b>✦</b><span><em>Борода</em></span><b>✦</b><span>Запис онлайн</span><b>✦</b><span><em>Estd 2024</em></span><b>✦</b>
+      <span>Bober Barbershop</span><b>✦</b><span><em>Ужгород</em></span><b>✦</b><span>Стрижки</span><b>✦</b><span><em>Борода</em></span><b>✦</b><span>Запис онлайн</span><b>✦</b><span>Приведи друга</span><b>✦</b><span><em>стрижка безкоштовно</em></span><b>✦</b><span><em>Estd 2024</em></span><b>✦</b>
+      <span>Bober Barbershop</span><b>✦</b><span><em>Ужгород</em></span><b>✦</b><span>Стрижки</span><b>✦</b><span><em>Борода</em></span><b>✦</b><span>Запис онлайн</span><b>✦</b><span>Приведи друга</span><b>✦</b><span><em>стрижка безкоштовно</em></span><b>✦</b><span><em>Estd 2024</em></span><b>✦</b>
     </div>
   </div>
 
@@ -266,10 +272,10 @@
     <button type="button" class="prize__close" data-close aria-label="Закрити">✕</button>
     <img class="prize__logo" src="assets/logo-clean.png" alt="">
     <p class="prize__kicker">Бобер стрибнув 3 рази!</p>
-    <h3 id="prize-title"><em>−10%</em> на твою стрижку</h3>
+    <h3 id="prize-title"><em>−15%</em> для спортсменів</h3>
     <p class="prize__label">Твій промокод</p>
-    <button type="button" class="prize__code" id="prize-code"><b>BOBER10</b><small>Копіювати</small></button>
-    <p class="prize__note">Назви промокод майстру або напиши його в коментарі під час онлайн-запису.</p>
+    <button type="button" class="prize__code" id="prize-code"><b>SPORT15</b><small>Копіювати</small></button>
+    <p class="prize__note">Знижка на стрижку для всіх, хто займається будь-яким спортом. Назви промокод майстру або напиши його в коментарі під час онлайн-запису.</p>
     <a class="btn btn--accent btn--lg btn--full" href="https://n777682.alteg.io" target="_blank" rel="noopener">Записатися зі знижкою <i>↗</i></a>
   </div>
 </div>
@@ -291,6 +297,11 @@
     <feBlend in="rg" in2="bs" mode="screen"/>
   </filter>
 </svg>
+<div class="pole" id="pole" aria-hidden="true">
+  <span class="pole__cap"></span>
+  <span class="pole__glass"><span class="pole__fill" id="pole-fill"></span></span>
+  <span class="pole__cap pole__cap--bottom"></span>
+</div>
 <script src="main.js"></script>
 <script src="dev-reload.js"></script>
 </body>

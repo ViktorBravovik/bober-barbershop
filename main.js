@@ -434,7 +434,7 @@ if (!reduceMotion) {
   if (!bober || !hint || !prize) return;
 
   const JUMPS = 3;
-  const CODE = "BOBER10";
+  const CODE = "SPORT15";
   const dots = [...hint.querySelectorAll(".game-dots i")];
   const msg = hint.querySelector("[data-msg]");
   const hero = document.querySelector(".hero");
@@ -575,7 +575,7 @@ if (!reduceMotion) {
     // fits = the beaver starts below the header and the info row ends inside the screen
     // (scrollHeight can't be used: the slightly zoomed background photo inflates it)
     // layout positions (offsetTop) ignore the entrance animations' temporary shifts
-    const headerH = document.getElementById("header").offsetHeight;
+    const headerH = document.getElementById("header").getBoundingClientRect().bottom; // promo bar + header
     const content = hero.querySelector(".hero__content");
     const top = content.offsetTop + hero.querySelector(".hero__game").offsetTop;
     const bottom = info.offsetTop + info.offsetHeight;
@@ -766,4 +766,20 @@ if (!reduceMotion) {
   update();
   window.addEventListener("scroll", update, { passive: true });
   requestAnimationFrame(tick);
+})();
+
+/* ---------- barber pole = how far down the page you are ---------- */
+(() => {
+  const pole = document.getElementById("pole");
+  const fill = document.getElementById("pole-fill");
+  if (!pole || !fill) return;
+  const update = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+    fill.style.transform = `scaleY(${p.toFixed(4)})`;
+    pole.classList.toggle("is-on", window.scrollY > 40); // appears once you start scrolling
+  };
+  update();
+  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update);
 })();

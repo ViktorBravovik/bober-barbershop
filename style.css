@@ -15,7 +15,7 @@
   --header-h:76px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:var(--header-h)}
+html{scroll-behavior:smooth;scroll-padding-top:var(--top-h)}
 body{background:var(--bg);color:var(--fg);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 img{display:block;max-width:100%}
@@ -68,7 +68,7 @@ h2{font-size:clamp(40px,6vw,96px);text-transform:uppercase;margin-bottom:clamp(2
 
 /* ---------- header ---------- */
 #header{
-  position:fixed;inset:0 0 auto;z-index:50;height:var(--header-h);
+  position:fixed;inset:var(--promo-h) 0 auto;z-index:50;height:var(--header-h);
   display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 var(--pad);
   transition:background .4s,border-color .4s;border-bottom:1px solid transparent;
 }
@@ -83,7 +83,7 @@ h2{font-size:clamp(40px,6vw,96px);text-transform:uppercase;margin-bottom:clamp(2
 /* ---------- HERO ---------- */
 .hero{
   position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;
-  padding:calc(var(--header-h) + 24px) var(--pad) 0;overflow:hidden;
+  padding:calc(var(--top-h) + 24px) var(--pad) 0;overflow:hidden;
 }
 .hero__bg{position:absolute;inset:0;z-index:-1}
 .hero__bg img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);animation:heroZoom 1.8s var(--ease) forwards}
@@ -140,7 +140,7 @@ a.val:hover{color:var(--accent)}
 
 /* ---------- services ---------- */
 .services{display:grid;grid-template-columns:1fr 1.5fr;gap:clamp(32px,6vw,96px);align-items:start}
-.services__intro{position:sticky;top:calc(var(--header-h) + 32px)}
+.services__intro{position:sticky;top:calc(var(--top-h) + 32px)}
 .services__intro p{color:var(--muted);font-size:16px;line-height:1.5;margin-bottom:28px;max-width:380px}
 .price-list{list-style:none;border-top:1px solid var(--line)}
 .price-list li{
@@ -445,7 +445,7 @@ body.is-locked{overflow:hidden}
 
 /* game hint sits top-right, under the phone number in the header (desktop) */
 .hero > .game-hint{
-  position:absolute;z-index:4;top:calc(var(--header-h) + 14px);right:var(--pad);
+  position:absolute;z-index:4;top:calc(var(--top-h) + 14px);right:var(--pad);
   align-items:flex-end;text-align:right;max-width:340px;padding:16px 18px;border-radius:12px;
   background:rgba(18,17,16,.55);backdrop-filter:blur(8px);border:1px solid var(--line);
   opacity:0;transform:translateY(-10px);animation:rise .9s .6s var(--ease) forwards
@@ -498,14 +498,14 @@ body.is-locked{overflow:hidden}
 @media (max-width:900px){
   .hud{position:static;width:auto;margin:0 0 18px;display:grid;grid-template-columns:1fr 1fr;gap:4px 16px}
   .hud__bar,.hud__geo{grid-column:1/-1}
-  .sweep-hint{bottom:auto;top:calc(var(--header-h) + 6px)}
+  .sweep-hint{bottom:auto;top:calc(var(--top-h) + 6px)}
 }
 
 /* 3) visit path */
 .visit-pin{position:relative}
 @media (min-width:901px) and (min-height:640px){
   .visit-pin{height:260svh}
-  .visit-pin > .visit{position:sticky;top:0;height:100svh;padding-top:calc(var(--header-h) + 20px);display:flex;flex-direction:column}
+  .visit-pin > .visit{position:sticky;top:0;height:100svh;padding-top:calc(var(--top-h) + 20px);display:flex;flex-direction:column}
   .visit__inner{flex:1;display:flex;flex-direction:column;min-height:0}
   .visit__map{flex:1;min-height:0}
 }
@@ -564,7 +564,7 @@ body.is-locked{overflow:hidden}
 
 /* tighter pinned hero so it fits common laptop screens (1280×720 … 1920×1080) */
 @media (min-width:901px) and (min-height:640px){
-  .hero-pin > .hero{padding-top:calc(var(--header-h) + 8px)}
+  .hero-pin > .hero{padding-top:calc(var(--top-h) + 8px)}
   .hero-pin > .hero .hero__logo{width:min(13vw,14vh,210px)}
   .hero-pin > .hero .hero__game{margin-bottom:min(16px,1.6vh)}
   .hero-pin > .hero .hero__kicker{margin-bottom:min(12px,1.2vh)}
@@ -575,3 +575,52 @@ body.is-locked{overflow:hidden}
 @media (max-width:900px){
   .hud,.sweep-hint{display:none}
 }
+
+
+/* =========================================================
+   v2.1 — promo bar, barber-pole scroll progress
+   ========================================================= */
+:root{--promo-h:32px;--top-h:calc(var(--header-h) + var(--promo-h))}
+
+/* thin promo bar above the header */
+.promo-bar{
+  position:fixed;inset:0 0 auto;z-index:51;height:var(--promo-h);
+  display:flex;align-items:center;justify-content:center;gap:10px;padding:0 var(--pad);
+  background:var(--accent);color:#fff;font-size:12.5px;font-weight:500;letter-spacing:.01em;white-space:nowrap;overflow:hidden
+}
+.promo-bar__tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;background:rgba(0,0,0,.22);padding:3px 8px;border-radius:100px}
+.promo-bar i{font-style:normal;transition:transform .4s var(--ease)}
+.promo-bar:hover i{transform:translateX(4px)}
+.promo-bar:hover .promo-bar__full,.promo-bar:hover .promo-bar__short{text-decoration:underline;text-underline-offset:3px}
+.promo-bar__short{display:none}
+@media (max-width:900px){
+  :root{--promo-h:28px}
+  .promo-bar{font-size:12px;gap:8px}
+  .promo-bar__full{display:none}
+  .promo-bar__short{display:inline}
+}
+
+/* barber pole = scroll progress */
+.pole{
+  position:fixed;z-index:45;right:14px;top:50%;width:14px;height:min(220px,32vh);transform:translateY(-50%);
+  display:flex;flex-direction:column;align-items:center;pointer-events:none;
+  opacity:0;transition:opacity .5s
+}
+.pole.is-on{opacity:1}
+.pole__cap{width:18px;height:9px;border-radius:9px 9px 3px 3px;background:linear-gradient(90deg,#8b847a,#efe9df 45%,#8b847a)}
+.pole__cap--bottom{border-radius:3px 3px 9px 9px}
+.pole__glass{
+  position:relative;flex:1;width:100%;overflow:hidden;border-radius:2px;
+  background:rgba(239,233,223,.08);box-shadow:inset 0 0 0 1px var(--line)
+}
+.pole__fill{
+  position:absolute;left:0;right:0;bottom:0;height:100%;transform-origin:bottom;transform:scaleY(0);
+  background:repeating-linear-gradient(-45deg,var(--accent) 0 7px,#efe9df 7px 14px,#2c5aa0 14px 21px,#efe9df 21px 28px);
+  background-size:100% 39.6px;animation:pole 1.2s linear infinite
+}
+.pole__glass::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.35),transparent 40%,rgba(255,255,255,.18) 55%,transparent 70%,rgba(0,0,0,.35))}
+@keyframes pole{to{background-position:0 39.6px}}
+@media (max-width:900px){.pole{right:6px;width:10px;height:min(160px,26vh)}.pole__cap{width:13px;height:7px}}
+@media (prefers-reduced-motion:reduce){.pole__fill{animation:none}}
+/* longer sport-promo text: give the game card a bit more width on desktop */
+@media (min-width:901px){ .hero > .game-hint{max-width:420px} }
