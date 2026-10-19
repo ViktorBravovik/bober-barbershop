@@ -624,3 +624,6 @@ body.is-locked{overflow:hidden}
 @media (prefers-reduced-motion:reduce){.pole__fill{animation:none}}
 /* longer sport-promo text: give the game card a bit more width on desktop */
 @media (min-width:901px){ .hero > .game-hint{max-width:420px} }
+/* promo bar: white background, orange text */
+.promo-bar{background:#fff;color:var(--accent);font-weight:600}
+.promo-bar__tag{background:var(--accent);color:#fff}
